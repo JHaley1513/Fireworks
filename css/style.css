@@ -1,0 +1,39 @@
+/* basic styles for black background and crosshair cursor */
+body {
+	background: black;
+	font-family: 'Bad Script', cursive;
+	margin: 0;
+}
+
+#text {
+	color: white;
+	font-size: 27px;
+	text-align: center;
+}
+
+#main-canvas {
+	cursor: crosshair;
+	display: block;
+	transition-duration: 0.8s;
+}
+
+#progress-bar {
+	border: 0;
+	height: 0.7rem;
+	width: 100%;
+	/*z-index: 1;*/
+	/*display: inline-block;*/
+	-webkit-appearance: none;
+  -moz-appearance: none;
+	/*width: 20%;*/
+}
+/*
+#progress-bar progress::-webkit-progress-bar {
+}
+
+#progress-bar progress::-webkit-progress-value {
+
+}
+
+#progress-bar progress::-moz-progress-bar { /* for progress meter color */
+}*/
