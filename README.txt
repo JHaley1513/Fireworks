@@ -1,5 +1,4 @@
-J. Haley and R. Kim
-March 2019
+J. Haley and R. Kim, March '19
 
 Light up your screen with Fireworks! Launch enough of it to trigger a BIG surprise
 
