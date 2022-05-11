@@ -1,5 +1,3 @@
-// var audioContext, audioSource, audioTrack, panner;
-
 var contexts = [];
 var sources = [];
 var panners = [];
@@ -13,27 +11,22 @@ var audioSamples = ["audio/fireworks1.wav",
 ];
 
 var text = document.getElementById('text');
-text.padding = window.innerHeight - 180 + "px 0 0"; //for top; left/right and bottom are 0
+text.padding = window.innerHeight - 180 + "px 0 0"; // for top; left/right and bottom are 0
 
-// progressBar.marginLeft = ;
+var bonusSize = 1.0;  // makes the fireworks bigger; increases after every time you fill up the progress bar
 
-var initialized = false;
-var bonusSize = 1.0;  //makes the fireworks bigger; increases after every time you fill up the progress bar
+for (let i = 0; i < 6; i++){
+	newContextAndPanner(i);
+}
+
+resetProgressBar(); // sets progress bar maximum to a random value between 5 and 15
+
+console.log('Initialized.');
 
 function getAudioElement(idx) {
   elementName = "boom" + idx;
   return document.getElementById(elementName);
 }
-
-mainCanvas.addEventListener('click', function() {
-  if(!initialized){
-    for (let i = 0; i < 6; i++){
-      newContextAndPanner(i);
-    }
-    initialized = true;
-    console.log('initialized');
-}
-});
 
 function newContextAndPanner(idx=0) {
   let context = new AudioContext();
@@ -62,7 +55,9 @@ function setPanning(xPos, idx=0) {
 }
 
 function loadAudioSample(idx=0) {
-  let randomSample = audioSamples[Math.floor(Math.random() * audioSamples.length)];
+	let i=Math.floor(Math.random() * audioSamples.length);
+  let randomSample = audioSamples[i];
+	console.log(i);
   getAudioElement(idx).src = randomSample;
 }
 
@@ -85,9 +80,9 @@ function randomFireworks() {
 }
 
 function resetProgressBar() {
-  progressBar.max = (Math.random() * 8) + 25;  //random number betwee 25 and 32 (inclusive)
-  progressBar.value = 0;
-  bonusSize *= 1.2;
+  progressBar.value = 0; //clear progress bar
+  progressBar.max = (Math.random() * 10) + 5;  //set maximum to random value between 5 and 15
+  bonusSize *= 1.2; //size of fireworks
 }
 
 //////// all the code above this line was written by us (Jon & Ruby) ////////
