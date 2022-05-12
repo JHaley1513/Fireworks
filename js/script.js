@@ -1,6 +1,7 @@
-var contexts = [];
-var sources = [];
-var panners = [];
+// if false: fireworks color starts with a default color and gradually changes with each launch
+var randomColors = false; 
+// if true: launch fireworks from random spots along the bottom of the screen, false: always launch from the bottom middle.
+var randomLaunchPosition = true;
 
 var progressBar = document.getElementById('progress-bar');
 var mainCanvas = document.getElementById('main-canvas');
@@ -10,83 +11,90 @@ var audioSamples = ["audio/fireworks1.wav",
                     "audio/fireworks7.wav"
 ];
 
+var contexts = [];
+var sources = [];
+var panners = [];
+
+// Add padding above the text to make it appear at bottom of screen. (left/right and bottom padding are 0)
 var text = document.getElementById('text');
-text.padding = window.innerHeight - 180 + "px 0 0"; // for top; left/right and bottom are 0
+text.padding = window.innerHeight - 180 + "px 0 0";
 
-var bonusSize = 1.0;  // makes the fireworks bigger; increases after every time you fill up the progress bar
+var baseSize = 1.0;  // size of fireworks. increases every time you fill up the progress bar
 
+// Create multiple audio contexts and panners, allows playing multiple audio files simultaneously
 for (let i = 0; i < 6; i++){
 	newContextAndPanner(i);
 }
 
 resetProgressBar(); // sets progress bar maximum to a random value between 5 and 15
-
 console.log('Initialized.');
 
 function getAudioElement(idx) {
-  elementName = "boom" + idx;
-  return document.getElementById(elementName);
+	elementName = "boom" + idx;
+	return document.getElementById(elementName);
 }
 
-function newContextAndPanner(idx=0) {
-  let context = new AudioContext();
-  let audioElement = getAudioElement(idx);
-  let source = context.createMediaElementSource(audioElement);
-  let pan = context.createStereoPanner();
-  source.connect(pan);
-  pan.connect(context.destination);
+function newContextAndPanner(idx) {
+	let audioElement = getAudioElement(idx);
+	let ctx = new AudioContext();
+	let src = ctx.createMediaElementSource(audioElement);
+	let pan = ctx.createStereoPanner();
+	src.connect(pan);
+	pan.connect(ctx.destination);
 
-  contexts.push(context);
-  sources.push(source);
-  panners.push(pan);
-}
-
-function explosionSound(xPos, idx=0) {
-  setPanning(xPos);
-  let audioElement = getAudioElement(idx);
-  loadAudioSample(idx);
-  audioElement.play();
+	// prevent garbage collection
+	contexts.push(ctx);
+	sources.push(src);
+	panners.push(pan);
 }
 
 function setPanning(xPos, idx=0) {
-  let panPosition = xPos / canvas.width; //this gives us a number from 0 to 1; we want a number from -1 to 1.
-  panPosition = (panPosition*2) - 1;
-  panners[idx].pan.value = panPosition;
+	let panPosition = xPos / canvas.width; // this gives us a number from 0 to 1; we want a number from -1 to 1.
+	panPosition = (panPosition*2) - 1;
+	panners[idx].pan.value = panPosition;
 }
-
+  
 function loadAudioSample(idx=0) {
-	let i=Math.floor(Math.random() * audioSamples.length);
-  let randomSample = audioSamples[i];
+	let i = Math.floor(Math.random() * audioSamples.length);
 	console.log(i);
-  getAudioElement(idx).src = randomSample;
+	getAudioElement(idx).src = audioSamples[i];
 }
 
-function incrementProgressBar() {
-  progressBar.value += 1;
-}
-
-function progressBarFull() {
-  return progressBar.value == progressBar.max;
+function explosionSound(xPos, idx=0) {
+	setPanning(xPos);
+	let audioElement = getAudioElement(idx);
+	loadAudioSample(idx);
+	audioElement.play();
 }
 
 function randomFireworks() {
-  let explosionLocations = [];
-  for (let i = 0; i < contexts.length; i++){
-    let x = random( 0, cw );
-    let y = random( 0, ch / 2 );
-    fireworks.push( new Firework( cw / 2, ch, x, y ) );
-    explosionSound(x, i);
-  }
+	for (let i = 0; i < contexts.length; i++){
+		// generate random locations within height and width of Canvas element
+		let x = random(0, cw);
+		let y = random(0, ch/2);
+		fireworks.push(new Firework(cw/2, ch, x, y));
+		explosionSound(x, i);
+	}
 }
 
+function incrementProgressBar() {
+	progressBar.value++;
+}
+
+function progressBarFull() {
+	return progressBar.value >= progressBar.max - 1; // Reset progress bar when it's about to be filled up
+}
+
+// Clear progress bar, set maximum to a random value, increase size of fireworks
 function resetProgressBar() {
-  progressBar.value = 0; //clear progress bar
-  progressBar.max = (Math.random() * 10) + 5;  //set maximum to random value between 5 and 15
-  bonusSize *= 1.2; //size of fireworks
+	progressBar.value = 0;
+	progressBar.max = (Math.random() * 10) + 5;
+	baseSize *= 1.2;
 }
 
-//////// all the code above this line was written by us (Jon & Ruby) ////////
-//////// all the code below this line, except for calls to the functions we defined above, is from https://codepen.io/whqet/pen/Auzch ////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////// all the code below this line, except for calls to the above functions, is from https://codepen.io/whqet/pen/Auzch ////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // when animating on canvas, it is best to use requestAnimationFrame instead of setTimeout or setInterval
 // not supported in all browsers though and sometimes needs a prefix, so we need a shim
@@ -172,46 +180,46 @@ function Firework( sx, sy, tx, ty ) {
 
 // update firework
 Firework.prototype.update = function( index ) {
-  if (progressBarFull()) {
-    console.log('max');
-    randomFireworks();
-    resetProgressBar();
-  }
-  else {
-  	// remove last item in coordinates array
-  	this.coordinates.pop();
-  	// add current coordinates to the start of the array
-  	this.coordinates.unshift( [ this.x, this.y ] );
+	if (progressBarFull()) {
+		incrementProgressBar();
+		randomFireworks();
+		resetProgressBar();
+	}
+	else {
+		// remove last item in coordinates array
+		this.coordinates.pop();
+		// add current coordinates to the start of the array
+		this.coordinates.unshift( [ this.x, this.y ] );
 
-  	// cycle the circle target indicator radius
-  	if( this.targetRadius < 8 ) {
-  		this.targetRadius += 0.3;
-  	} else {
-  		this.targetRadius = 1;
-  	}
+		// cycle the circle target indicator radius
+		if( this.targetRadius < 8 ) {
+			this.targetRadius += 0.3;
+		} else {
+			this.targetRadius = 1;
+		}
 
-  	// speed up the firework
-  	this.speed *= this.acceleration;
+		// speed up the firework
+		this.speed *= this.acceleration;
 
-  	// get the current velocities based on angle and speed
-  	var vx = Math.cos( this.angle ) * this.speed,
-  			vy = Math.sin( this.angle ) * this.speed;
-  	// how far will the firework have traveled with velocities applied?
-  	this.distanceTraveled = calculateDistance( this.sx, this.sy, this.x + vx, this.y + vy );
+		// get the current velocities based on angle and speed
+		var vx = Math.cos( this.angle ) * this.speed,
+				vy = Math.sin( this.angle ) * this.speed;
+		// how far will the firework have traveled with velocities applied?
+		this.distanceTraveled = calculateDistance( this.sx, this.sy, this.x + vx, this.y + vy );
 
-  	// if the distance traveled, including velocities, is greater than the initial distance to the target, then the target has been reached
-  	if( this.distanceTraveled >= this.distanceToTarget ) {
-  		createParticles( this.tx, this.ty );
-  		// remove the firework, use the index passed into the update function to determine which to remove
-  		fireworks.splice( index, 1 );
-      explosionSound(this.tx);
-      incrementProgressBar();
-  	} else {
-  		// target not reached, keep traveling
-  		this.x += vx;
-  		this.y += vy;
-  	}
-  }
+		// if the distance traveled, including velocities, is greater than the initial distance to the target, then the target has been reached
+		if( this.distanceTraveled >= this.distanceToTarget ) {
+			createParticles( this.tx, this.ty );
+			// remove the firework, use the index passed into the update function to determine which to remove
+			fireworks.splice( index, 1 );
+			explosionSound(this.tx);
+			incrementProgressBar();
+		} else {
+			// target not reached, keep traveling
+			this.x += vx;
+			this.y += vy;
+		}
+	}
 }
 
 // draw firework
@@ -287,7 +295,7 @@ Particle.prototype.draw = function() {
 // create particle group/explosion
 function createParticles( x, y ) {
 	// increase the particle count for a bigger explosion (default: 30), beware of the canvas performance hit with the increased particles though
-	var particleCount = Math.floor(((Math.random() * 20) + 20) * bonusSize);
+	var particleCount = Math.floor(((Math.random() * 20) + 20) * baseSize);
 	while( particleCount-- ) {
 		particles.push( new Particle( x, y ) );
 	}
@@ -298,12 +306,13 @@ function loop() {
 	// this function will run endlessly with requestAnimationFrame
 	requestAnimFrame( loop );
 
-	// increase the hue to get different colored fireworks over time
-	//hue += 0.5;
-
-  // create random color
-  hue= random(0, 360 );
-
+	if(randomColors) {
+    	hue = random(0, 360);
+	} else {
+		// increase the hue to get different colored fireworks over time
+		hue += 0.5;
+	}
+    
 	// normally, clearRect() would be used to clear the canvas
 	// we want to create a trailing effect though
 	// setting the composite operation to destination-out will allow us to clear the canvas at a specific opacity, rather than wiping it entirely
@@ -343,8 +352,15 @@ function loop() {
 	// limit the rate at which fireworks get launched when mouse is down
 	if( limiterTick >= limiterTotal ) {
 		if( mousedown ) {
-			// start the firework at the bottom middle of the screen, then set the current mouse coordinates as the target
-			fireworks.push( new Firework( cw / 2, ch, mx, my ) );
+			
+			if (randomLaunchPosition) {
+				// launch firework from random position along bottom of screen
+				let x = Math.floor(Math.random() * cw);
+				fireworks.push( new Firework( x, ch, mx, my ) );
+			} else {
+				// start the firework at the bottom middle of the screen, then set the current mouse coordinates as the target
+				fireworks.push( new Firework( cw / 2, ch, mx, my ) );
+			}
 			limiterTick = 0;
 		}
 	} else {
