@@ -54,15 +54,15 @@ function setPanning(xPos, idx=0) {
 	panners[idx].pan.value = panPosition;
 }
   
-function loadAudioSample(idx=0) {
+// elementIndex is only needed when playing multiple samples simultaneously for the full-progress-bar explosions
+function loadAudioSample(elementIndex=0) {
 	let i = Math.floor(Math.random() * audioSamples.length);
-	console.log(i);
-	getAudioElement(idx).src = audioSamples[i];
+	getAudioElement(elementIndex).src = audioSamples[i];
 }
 
-function explosionSound(xPos, idx=0) {
+function explosionSound(xPos, elementIndex=0) {
 	setPanning(xPos);
-	let audioElement = getAudioElement(idx);
+	let audioElement = getAudioElement(elementIndex);
 	loadAudioSample(idx);
 	audioElement.play();
 }
