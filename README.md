@@ -1,6 +1,6 @@
 ## What it's about
-This is an interactive point-and-click game.
-Launch fireworks, fill up a progress bar, and try not to go deaf from the resulting explosions.
+This is an interactive point-and-click game.<br>
+Launch fireworks, fill up a progress bar, and try not to go deaf from the resulting explosions.<br>
 (Just kidding...mostly)
 
 ## How I built it
