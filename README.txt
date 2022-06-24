@@ -1,4 +1,4 @@
-# What it's about
+<h1>What it's about</h1>
 This is an interactive point-and-click game.
 Launch fireworks, fill up a progress bar, and try not to go deaf from the resulting explosions (just kidding...mostly).
 
