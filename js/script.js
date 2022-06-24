@@ -63,7 +63,7 @@ function loadAudioSample(elementIndex=0) {
 function explosionSound(xPos, elementIndex=0) {
 	setPanning(xPos);
 	let audioElement = getAudioElement(elementIndex);
-	loadAudioSample(idx);
+	loadAudioSample(elementIndex);
 	audioElement.play();
 }
 
