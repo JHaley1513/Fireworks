@@ -1,4 +1,4 @@
-Hosted at jhaley1513.github.io/Fireworks/ 
+Hosted at http://jhaley1513.github.io/Fireworks/ 
 
 ## What it's about
 This is an interactive point-and-click game.<br>
