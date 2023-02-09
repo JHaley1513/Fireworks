@@ -1,10 +1,10 @@
 ## What it's about
-This is an interactive point-and-click [game](https://jhaley1513.github.io/Fireworks/).<br>
+This is an interactive point-and-click <a href="https://jhaley1513.github.io/Fireworks/" target="_blank">game</a>.<br>
 Launch fireworks, fill up a progress bar, and try not to go deaf from the resulting explosions.<br>
 (Just kidding...mostly)
 
 ## How I built it
-- I repurposed the animations from this script: https://codepen.io/whqet/pen/Auzch
+- I repurposed the animations from this <a href="https://codepen.io/whqet/pen/Auzch" target="_blank">script</a>.
 - I took the script, changed the fireworks events to trigger only on clicks, and tied them to a progress bar.
 - When the bar is filled, multiple fireworks are launched to random locations, and the size of subsequent fireworks is increased.
 - Every launch triggers an audio file, panned to the launch location. I used multiple audio elements and contexts for playing multiple audio files simultaneously.
