@@ -1,5 +1,5 @@
 ## What it's about
-http://jhaley1513.github.io/Fireworks/ <br>
+https://jhaley1513.github.io/Fireworks/ <br>
 This is an interactive point-and-click game.<br>
 Launch fireworks, fill up a progress bar, and try not to go deaf from the resulting explosions.<br>
 (Just kidding...mostly)
